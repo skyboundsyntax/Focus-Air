@@ -17,6 +17,7 @@ FocusAir 2.0 is a React productivity app that turns a focus session into a virtu
 - React
 - Vite
 - JavaScript
+- Browser APIs for timers, local time formatting, and interactive UI state
 - CSS-in-JS inline styling
 
 ## Getting Started
@@ -39,6 +40,12 @@ npm run dev
 
 Vite will start the development server on `127.0.0.1`. Open the local URL shown in the terminal.
 
+## API and Data
+
+FocusAir 2.0 uses built-in app data for airports, airlines, seat maps, flight phases, food rewards, and XP values. The UI also uses browser/runtime APIs for timing, local time display, and stateful interactions.
+
+If you connect this project to a backend API, document the API base URL, required environment variables, authentication, and endpoint list here.
+
 ## Project Structure
 
 ```text
@@ -60,10 +67,6 @@ Vite will start the development server on `127.0.0.1`. Open the local URL shown 
 4. Pick an available seat.
 5. Review the boarding pass and begin the flight.
 6. Stay focused until landing to earn XP and save the session to the flight log.
-
-## Notes
-
-The app currently uses local, hard-coded airport, airline, seat, and reward data. It does not require an external API.
 
 ## License
 
