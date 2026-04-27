@@ -242,7 +242,7 @@ function Attendant({female,accent,msg,onDismiss}){
         <div style={{background:"rgba(8,8,20,0.96)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:"16px 16px 4px 16px",padding:"12px 16px",maxWidth:220,fontSize:12,lineHeight:1.6,color:"#e8e8e8",backdropFilter:"blur(20px)",boxShadow:"0 8px 32px rgba(0,0,0,0.7)",position:"relative"}}>
           <div style={{fontSize:9,color:accent,fontWeight:700,letterSpacing:1.5,marginBottom:5,textTransform:"uppercase"}}>{female?"Sofia":"Arjun"} · Cabin Crew</div>
           {msg}
-          <button onClick={onDismiss} style={{position:"absolute",top:6,right:10,background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:14,lineHeight:1}}>×</button>
+          <button onClick={onDismiss} style={{position:"absolute",top:6,right:10,background:"none",border:"none",color:"#9aa8af",cursor:"pointer",fontSize:14,lineHeight:1}}>×</button>
         </div>
       )}
       <svg width="64" height="108" viewBox="0 0 64 108" style={{filter:`drop-shadow(0 4px 16px ${accent}55)`,cursor:"pointer"}} onClick={onDismiss}>
@@ -316,7 +316,7 @@ function BoardingPass({dep,arr,al,seat,fi,name,cls,onBoard}){
               <div style={{flex:1,textAlign:"center"}}>
                 <div style={{fontSize:20}}>✈</div>
                 <div style={{height:1,background:`linear-gradient(90deg,transparent,${al.accent}66,transparent)`,margin:"6px 0"}}/>
-                <div style={{fontSize:10,color:"#555"}}>{fmt(fi.durationMins)} · {fi.dist}km</div>
+                <div style={{fontSize:10,color:"#9aa8af"}}>{fmt(fi.durationMins)} · {fi.dist}km</div>
               </div>
               <div style={{textAlign:"center"}}>
                 <div style={{fontSize:32,fontWeight:900,color:"#fff"}}>{arr.code}</div>
@@ -328,7 +328,7 @@ function BoardingPass({dep,arr,al,seat,fi,name,cls,onBoard}){
           <div style={{padding:"14px 24px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12,borderBottom:"1px dashed rgba(255,255,255,0.07)"}}>
             {[["PASSENGER",name.toUpperCase()],["SEAT",seat||"—"],["GATE",fi.gate],["CLASS",cls.toUpperCase()],["BOARDING",fi.depTime],["AIRCRAFT","A380"],["STATUS","READY"],["TYPE","FOCUS"]].map(([l,v])=>(
               <div key={l}>
-                <div style={{fontSize:8,color:"#444",letterSpacing:1.5,textTransform:"uppercase",marginBottom:3}}>{l}</div>
+                <div style={{fontSize:8,color:"#8fa2ad",letterSpacing:1.5,textTransform:"uppercase",marginBottom:3}}>{l}</div>
                 <div style={{fontSize:11,fontWeight:700,color:"#ccc"}}>{v}</div>
               </div>
             ))}
@@ -340,14 +340,14 @@ function BoardingPass({dep,arr,al,seat,fi,name,cls,onBoard}){
                   <div key={i} style={{flex:1,height:`${50+(i*17+fi.dist)%45}%`,background:`${al.accent}${i%3===0?"ff":"66"}`}}/>
                 ))}
               </div>
-              <div style={{fontSize:8,color:"#333",marginTop:3,fontFamily:"monospace"}}>{fi.flightNum}{dep.code}{arr.code}{seat}</div>
+              <div style={{fontSize:8,color:"#7f8f98",marginTop:3,fontFamily:"monospace"}}>{fi.flightNum}{dep.code}{arr.code}{seat}</div>
             </div>
             <button onClick={onBoard} style={{background:`linear-gradient(135deg,${al.color},${al.accent})`,border:"none",borderRadius:12,padding:"13px 20px",color:"#fff",fontWeight:800,fontSize:14,cursor:"pointer",whiteSpace:"nowrap"}}>
               Board →
             </button>
           </div>
         </div>
-        <p style={{textAlign:"center",color:"#333",fontSize:11,marginTop:10}}>Please proceed to your focus session</p>
+        <p style={{textAlign:"center",color:"#7f8f98",fontSize:11,marginTop:10}}>Please proceed to your focus session</p>
       </div>
     </div>
   );
@@ -361,13 +361,13 @@ function SeatMap({selected,onSelect,cls}){
   return(
     <div style={{overflowY:"auto",maxHeight:280,padding:"4px 0"}}>
       <div style={{display:"flex",gap:2,marginBottom:6,paddingLeft:30}}>
-        {cols.map((c,i)=><span key={i} style={{width:24,textAlign:"center",fontSize:9,color:"#555",fontFamily:"monospace"}}>{c}</span>)}
+        {cols.map((c,i)=><span key={i} style={{width:24,textAlign:"center",fontSize:9,color:"#9aa8af",fontFamily:"monospace"}}>{c}</span>)}
       </div>
       {rows.map(r=>{
         const rowSeats=seats.filter(s=>s.row===r);
         return(
           <div key={r} style={{display:"flex",alignItems:"center",gap:2,marginBottom:2}}>
-            <span style={{width:26,fontSize:9,color:"#444",fontFamily:"monospace",textAlign:"right",paddingRight:4}}>{r}</span>
+            <span style={{width:26,fontSize:9,color:"#8fa2ad",fontFamily:"monospace",textAlign:"right",paddingRight:4}}>{r}</span>
             {cols.map((c,ci)=>{
               if(c==="") return <div key={ci} style={{width:8}}/>;
               const s=rowSeats.find(x=>x.col===c);
@@ -385,7 +385,7 @@ function SeatMap({selected,onSelect,cls}){
           </div>
         );
       })}
-      <p style={{textAlign:"center",color:"#333",fontSize:10,marginTop:6}}>W = Window · Scroll for more rows</p>
+      <p style={{textAlign:"center",color:"#7f8f98",fontSize:10,marginTop:6}}>W = Window · Scroll for more rows</p>
     </div>
   );
 }
@@ -401,14 +401,14 @@ function Dropdown({label,placeholder,query,setQuery,selected,onSelect,items,rend
   },[]);
   return(
     <div ref={ref} style={{position:"relative"}}>
-      <div style={{fontSize:10,color:"#555",letterSpacing:2,textTransform:"uppercase",marginBottom:7}}>{label}</div>
+      <div style={{fontSize:10,color:"#e5b19a",letterSpacing:2,textTransform:"uppercase",marginBottom:7}}>{label}</div>
       <input value={query} onChange={e=>{setQuery(e.target.value);setOpen(true);onSelect(null);}} onFocus={()=>setOpen(true)} placeholder={placeholder}
         style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,padding:"11px 14px",color:"#e8e8e8",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
       {selected&&<div style={{fontSize:10,color:"#00D4AA",marginTop:4}}>✓ {renderLabel(selected)}</div>}
       {open&&query.length>0&&(
         <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:"#0d0d1e",border:"1px solid rgba(255,255,255,0.09)",borderRadius:10,zIndex:500,maxHeight:220,overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,0.9)"}}>
           {items.length===0
-            ?<div style={{padding:"12px 14px",color:"#444",fontSize:12}}>No results</div>
+            ?<div style={{padding:"12px 14px",color:"#9aa8af",fontSize:12}}>No results</div>
             :items.map(item=>(
               <div key={item[itemKey]} onClick={()=>{onSelect(item);setQuery(renderLabel(item));setOpen(false);}}
                 style={{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.04)"}}
@@ -431,9 +431,9 @@ function CityCard({ap,label}){
   const temp=temps[ap.country]||20;
   return(
     <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:12,padding:"13px 16px"}}>
-      <div style={{fontSize:9,color:"#444",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>{label}</div>
+      <div style={{fontSize:9,color:"#a8b7bf",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>{label}</div>
       <div style={{fontSize:20,fontWeight:900,letterSpacing:-0.5}}>{ap.code}</div>
-      <div style={{fontSize:11,color:"#666",marginBottom:6}}>{ap.city}, {ap.country}</div>
+      <div style={{fontSize:11,color:"#a8b7bf",marginBottom:6}}>{ap.city}, {ap.country}</div>
       <div style={{fontFamily:"monospace",fontSize:15,color:"#00D4FF",marginBottom:4}}>{t}</div>
       <div style={{fontSize:11,color:"#888"}}>{temp}°C · Local Time</div>
     </div>
@@ -446,6 +446,7 @@ export default function App(){
   const [auth,setAuth]=useState(INITIAL_USER);
   const [loginEmail,setLoginEmail]=useState("");
   const [loginPass,setLoginPass]=useState("");
+  const [loginName,setLoginName]=useState("");
   const [authMode,setAuthMode]=useState("signin");
   const [authError,setAuthError]=useState("");
   const [screen,setScreen]=useState(INITIAL_USER ? (savedFlight?.fi ? "flight" : "home") : "login");
@@ -500,15 +501,17 @@ export default function App(){
       setFi(null);setTimer(0);setProg(0);setPhase(0);setBreakSecs(0);setBreaking(false);setRunning(false);
       setScreen("home");
     }
-    setAuthError("");setLoginPass("");
+    setAuthError("");setLoginPass("");setLoginName("");
   }
 
   function handleAuth(e){
     e.preventDefault();
     const email=cleanEmail(loginEmail);
     const password=loginPass;
+    const displayName=loginName.trim();
     if(!email||!password){setAuthError("Enter an email and password to continue.");return;}
     if(!isEmail(email)){setAuthError("Use a valid email address.");return;}
+    if(authMode==="create"&&!displayName){setAuthError("Enter your name so your boarding pass is ready.");return;}
     const profile=getUserProfile(email);
     if(authMode==="signin"){
       if(!profile.password){setAuthError("No local account found. Create one first.");return;}
@@ -517,7 +520,7 @@ export default function App(){
       setAuthError("This local account already exists. Sign in instead.");
       return;
     }
-    const user={email,displayName:profile.displayName||email.split("@")[0]};
+    const user={email,displayName:authMode==="create"?displayName:(profile.displayName||email.split("@")[0])};
     saveUserProfile(email,{...profile,password,email,displayName:user.displayName,xp:profile.xp||0,logs:profile.logs||[],inFlight:profile.inFlight||null});
     writeJSON(AUTH_KEY,user);
     loadProfile(email,user);
@@ -526,7 +529,7 @@ export default function App(){
   function logout(){
     clearInterval(timerRef.current);clearInterval(breakRef.current);clearInterval(attRef.current);
     setRunning(false);setBreaking(false);setAuth(null);localStorage.removeItem(AUTH_KEY);
-    setLoginEmail("");setLoginPass("");setAuthMode("signin");setScreen("login");
+    setLoginEmail("");setLoginPass("");setLoginName("");setAuthMode("signin");setScreen("login");
   }
 
   // Keep ctx always fresh
@@ -612,6 +615,7 @@ export default function App(){
 
   function startFlight(){
     if(!dep||!arr||!al||!seat||!pName.trim()) return;
+    const passengerName=pName.trim();
     const dist=Math.round(haversine(dep.lat,dep.lon,arr.lat,arr.lon));
     const dur=duration(dist);
     const fn=`${al.code}${Math.floor(Math.random()*9000+1000)}`;
@@ -621,6 +625,7 @@ export default function App(){
     const arrD=new Date(now.getTime()+dur*60000);
     const arrTime=`${pad(arrD.getHours())}:${pad(arrD.getMinutes())}`;
     const info={dist,durationMins:dur,flightNum:fn,gate,depTime,arrTime};
+    setPName(passengerName);
     setFi(info);
     setTimer(0);setProg(0);setPhase(0);setRunning(false);setBreaking(false);setBreakSecs(0);
     setFemale(Math.random()>0.5);
@@ -671,11 +676,18 @@ export default function App(){
         <form onSubmit={handleAuth} style={{position:"relative",background:"rgba(3,18,28,0.76)",border:"1px solid rgba(229,177,154,0.22)",borderRadius:18,padding:20,boxShadow:"0 30px 90px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.07)",backdropFilter:"blur(22px)",overflow:"visible"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
             {[["signin","Sign In"],["create","Create"]].map(([mode,label])=>(
-              <button key={mode} type="button" onClick={()=>{setAuthMode(mode);setAuthError("");}} style={{padding:"10px 0",borderRadius:10,border:`1px solid ${authMode===mode?"rgba(229,177,154,0.45)":"rgba(255,255,255,0.08)"}`,background:authMode===mode?"rgba(229,177,154,0.14)":"rgba(255,255,255,0.035)",color:authMode===mode?"#ffd4c4":"#8a98a0",fontWeight:700,cursor:"pointer",fontSize:12}}>
+              <button key={mode} type="button" onClick={()=>{setAuthMode(mode);setAuthError("");}} style={{padding:"10px 0",borderRadius:10,border:`1px solid ${authMode===mode?"rgba(229,177,154,0.45)":"rgba(255,255,255,0.08)"}`,background:authMode===mode?"rgba(229,177,154,0.14)":"rgba(255,255,255,0.035)",color:authMode===mode?"#ffd4c4":"#a8b7bf",fontWeight:700,cursor:"pointer",fontSize:12}}>
                 {label}
               </button>
             ))}
           </div>
+          {authMode==="create"&&(
+            <>
+              <div style={{fontSize:10,color:"#e5b19a",letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>Name</div>
+              <input type="text" value={loginName} onChange={e=>setLoginName(e.target.value)} placeholder="your name?"
+                style={{width:"100%",background:"rgba(255,255,255,0.045)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"12px 14px",color:"#f4f0e8",fontSize:14,marginBottom:12}}/>
+            </>
+          )}
           <div style={{fontSize:10,color:"#e5b19a",letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>Email</div>
           <input type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} placeholder="you@example.com"
             style={{width:"100%",background:"rgba(255,255,255,0.045)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"12px 14px",color:"#f4f0e8",fontSize:14,marginBottom:12}}/>
@@ -694,7 +706,7 @@ export default function App(){
   // ═══ HOME ═══════════════════════════════════════════════════
   if(screen==="home") return(
     <div style={{minHeight:"100vh",background:"#06060f",color:"#e8e8e8",fontFamily:"system-ui,sans-serif"}}>
-      <style>{`*{box-sizing:border-box}@keyframes wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}@keyframes fly{0%{transform:translateX(-4px)}50%{transform:translateX(4px)}100%{transform:translateX(-4px)}}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}input::placeholder{color:#333}input:focus{border-color:rgba(255,255,255,.18)!important;outline:none}`}</style>
+      <style>{`*{box-sizing:border-box}@keyframes wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}@keyframes fly{0%{transform:translateX(-4px)}50%{transform:translateX(4px)}100%{transform:translateX(-4px)}}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}input::placeholder{color:#7f8f98}input:focus{border-color:rgba(255,255,255,.18)!important;outline:none}`}</style>
       <div style={{position:"fixed",inset:0,background:"radial-gradient(ellipse 80% 50% at 20% 60%,#0d1b4b18,transparent),radial-gradient(ellipse 60% 40% at 80% 20%,#1a0b3b15,transparent)",zIndex:0}}/>
       <div style={{position:"fixed",inset:0,backgroundImage:"radial-gradient(circle,rgba(255,255,255,.02) 1px,transparent 1px)",backgroundSize:"50px 50px",zIndex:0}}/>
       <div style={{position:"relative",zIndex:1,maxWidth:800,margin:"0 auto",padding:"48px 20px"}}>
@@ -703,10 +715,10 @@ export default function App(){
           <button onClick={logout} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:9,padding:"7px 11px",color:"#888",cursor:"pointer",fontSize:11,fontWeight:700}}>Sign Out</button>
         </div>
         <div style={{textAlign:"center",marginBottom:44}}>
-          <div style={{fontSize:11,letterSpacing:6,color:"#333",textTransform:"uppercase",marginBottom:14}}>Productivity Aviation</div>
+          <div style={{fontSize:11,letterSpacing:6,color:"#7f8f98",textTransform:"uppercase",marginBottom:14}}>Productivity Aviation</div>
           <div style={{fontSize:48,animation:"fly 4s ease-in-out infinite",marginBottom:10}}>✈</div>
           <h1 style={{fontSize:46,fontWeight:900,letterSpacing:-2,margin:0,background:"linear-gradient(135deg,#fff,#a0c4ff 60%,#7ec8e3)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>FocusAir 2.0</h1>
-          <p style={{color:"#444",marginTop:10,fontSize:14}}>Your productivity, elevated to 35,000 feet</p>
+          <p style={{color:"#8fa2ad",marginTop:10,fontSize:14}}>Your productivity, elevated to 35,000 feet</p>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:18,flexWrap:"wrap"}}>
             {[["✦",`${xp.toLocaleString()} XP`],["🛫",`${logs.filter(l=>l.done).length} Flights`],["⏱",`${Math.floor(logs.reduce((a,l)=>a+l.dur,0)/60)}h Flown`]].map(([ic,val])=>(
               <div key={val} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:20,padding:"6px 16px",fontSize:12,color:"#888"}}>{ic} {val}</div>
@@ -719,13 +731,13 @@ export default function App(){
             onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)";e.currentTarget.style.border="1px solid rgba(255,255,255,0.07)"}}>
             <div style={{fontSize:32,marginBottom:10}}>🎫</div>
             <div style={{fontSize:20,fontWeight:800,color:"#e8e8e8",marginBottom:4}}>Book a Flight</div>
-            <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>Select route, airline, cabin class and A380 seat. Real distances → real focus duration.</div>
+            <div style={{fontSize:12,color:"#9aa8af",lineHeight:1.6}}>Select route, airline, cabin class and A380 seat. Real distances → real focus duration.</div>
           </button>
           <button onClick={()=>setScreen("log")} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:18,padding:22,cursor:"pointer",textAlign:"left",transition:"all 0.2s"}}
             onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.06)"}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.03)"}}>
             <div style={{fontSize:28,marginBottom:8}}>📋</div>
             <div style={{fontSize:16,fontWeight:700,color:"#e8e8e8",marginBottom:3}}>Flight Log</div>
-            <div style={{fontSize:11,color:"#555"}}>{logs.length} entries</div>
+            <div style={{fontSize:11,color:"#9aa8af"}}>{logs.length} entries</div>
           </button>
         </div>
         <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:18,padding:22}}>
@@ -738,7 +750,7 @@ export default function App(){
               <div key={f.id} style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:10,padding:"11px 12px",opacity:xp>=f.xp?1:0.3}}>
                 <div style={{fontSize:22,marginBottom:5}}>{f.emoji}</div>
                 <div style={{fontSize:11,fontWeight:600,marginBottom:2}}>{f.name}</div>
-                <div style={{fontSize:10,color:"#555"}}>{f.xp} XP · {f.mins}min</div>
+                <div style={{fontSize:10,color:"#9aa8af"}}>{f.xp} XP · {f.mins}min</div>
               </div>
             ))}
           </div>
@@ -752,7 +764,7 @@ export default function App(){
                   <span>{l.done?"🛬":"⚡"}</span>
                   <div>
                     <div style={{fontWeight:600,fontSize:13}}>{l.dep} → {l.arr}</div>
-                    <div style={{fontSize:10,color:"#555"}}>{l.al} · {l.date}</div>
+                    <div style={{fontSize:10,color:"#9aa8af"}}>{l.al} · {l.date}</div>
                   </div>
                 </div>
                 <div style={{color:"#C8A951",fontWeight:700,fontSize:13}}>+{l.xpE} XP</div>
@@ -767,37 +779,41 @@ export default function App(){
   // ═══ BOOKING ════════════════════════════════════════════════
   if(screen==="booking") return(
     <div style={{minHeight:"100vh",background:"#06060f",color:"#e8e8e8",fontFamily:"system-ui,sans-serif"}}>
-      <style>{`*{box-sizing:border-box}@keyframes wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}input::placeholder{color:#333}input:focus{border-color:rgba(255,255,255,.18)!important;outline:none}`}</style>
+      <style>{`*{box-sizing:border-box}@keyframes wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:4px}input::placeholder{color:#7f8f98}input:focus{border-color:rgba(126,200,227,.44)!important;box-shadow:0 0 0 3px rgba(126,200,227,.1);outline:none}`}</style>
       <div style={{maxWidth:700,margin:"0 auto",padding:"36px 20px 80px"}}>
-        <button onClick={()=>setScreen("home")} style={{background:"none",border:"none",color:"#444",cursor:"pointer",fontSize:12,letterSpacing:1.5,textTransform:"uppercase",marginBottom:28}} onMouseEnter={e=>e.currentTarget.style.color="#aaa"} onMouseLeave={e=>e.currentTarget.style.color="#444"}>← Back</button>
+        <button onClick={()=>setScreen("home")} style={{background:"none",border:"none",color:"#8fa2ad",cursor:"pointer",fontSize:12,letterSpacing:1.5,textTransform:"uppercase",marginBottom:28}} onMouseEnter={e=>e.currentTarget.style.color="#aaa"} onMouseLeave={e=>e.currentTarget.style.color="#8fa2ad"}>← Back</button>
         <h2 style={{fontSize:30,fontWeight:900,letterSpacing:-1,marginBottom:4}}>Book Your Flight</h2>
-        <p style={{color:"#444",fontSize:13,marginBottom:28}}>Real distances · Real durations · Airbus A380</p>
+        <p style={{color:"#8fa2ad",fontSize:13,marginBottom:28}}>Real distances · Real durations · Airbus A380</p>
 
         <div style={{marginBottom:18}}>
-          <div style={{fontSize:10,color:"#555",letterSpacing:2,textTransform:"uppercase",marginBottom:7}}>Passenger Name</div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"baseline",marginBottom:7}}>
+            <div style={{fontSize:10,color:"#e5b19a",letterSpacing:2,textTransform:"uppercase"}}>Passenger Name</div>
+            {auth?.displayName&&<div style={{fontSize:11,color:"#8fa2ad"}}>From account: {auth.displayName}</div>}
+          </div>
           <input value={pName} onChange={e=>setPName(e.target.value)} placeholder="Your full name…"
-            style={{width:"100%",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,padding:"12px 14px",color:"#e8e8e8",fontSize:13,outline:"none"}}/>
+            style={{width:"100%",background:"rgba(255,255,255,0.055)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"12px 14px",color:"#f8fbff",fontSize:13,outline:"none"}}/>
+          <div style={{fontSize:11,color:"#92a4ae",marginTop:6}}>You can change this name for the booking and boarding pass.</div>
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
           <Dropdown label="Departure" placeholder="City or code…" query={depQ} setQuery={setDepQ} selected={depSel} onSelect={v=>{setDepSel(v);setDep(v);}} items={fDep} itemKey="code"
             renderLabel={a=>`${a.code} – ${a.city}`}
-            renderRow={a=><div><div style={{fontWeight:600,fontSize:12}}><span style={{color:"#00D4FF",marginRight:6}}>{a.code}</span>{a.city}</div><div style={{fontSize:10,color:"#444",marginTop:1}}>{a.country}</div></div>}/>
+            renderRow={a=><div><div style={{fontWeight:600,fontSize:12}}><span style={{color:"#00D4FF",marginRight:6}}>{a.code}</span>{a.city}</div><div style={{fontSize:10,color:"#8fa2ad",marginTop:1}}>{a.country}</div></div>}/>
           <Dropdown label="Arrival" placeholder="City or code…" query={arrQ} setQuery={setArrQ} selected={arrSel} onSelect={v=>{setArrSel(v);setArr(v);}} items={fArr} itemKey="code"
             renderLabel={a=>`${a.code} – ${a.city}`}
-            renderRow={a=><div><div style={{fontWeight:600,fontSize:12}}><span style={{color:"#00D4FF",marginRight:6}}>{a.code}</span>{a.city}</div><div style={{fontSize:10,color:"#444",marginTop:1}}>{a.country}</div></div>}/>
+            renderRow={a=><div><div style={{fontWeight:600,fontSize:12}}><span style={{color:"#00D4FF",marginRight:6}}>{a.code}</span>{a.city}</div><div style={{fontSize:10,color:"#8fa2ad",marginTop:1}}>{a.country}</div></div>}/>
         </div>
 
         {dep&&arr&&dep.code!==arr.code&&(
           <div style={{background:"rgba(0,212,255,0.03)",border:"1px solid rgba(0,212,255,0.1)",borderRadius:14,padding:18,marginBottom:14}}>
             <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
-              <div style={{textAlign:"center"}}><div style={{fontSize:26,fontWeight:900}}>{dep.code}</div><div style={{fontSize:10,color:"#666"}}>{dep.city}</div></div>
+              <div style={{textAlign:"center"}}><div style={{fontSize:26,fontWeight:900}}>{dep.code}</div><div style={{fontSize:10,color:"#a8b7bf"}}>{dep.city}</div></div>
               <div style={{flex:1,textAlign:"center"}}>
                 <div style={{height:1,background:"rgba(0,212,255,0.2)",margin:"0 12px",position:"relative"}}><span style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",fontSize:14}}>✈</span></div>
                 <div style={{fontSize:11,color:"#00D4FF",fontWeight:600,marginTop:10}}>{fmt(duration(Math.round(haversine(dep.lat,dep.lon,arr.lat,arr.lon))))}</div>
-                <div style={{fontSize:10,color:"#444"}}>{Math.round(haversine(dep.lat,dep.lon,arr.lat,arr.lon))}km</div>
+                <div style={{fontSize:10,color:"#8fa2ad"}}>{Math.round(haversine(dep.lat,dep.lon,arr.lat,arr.lon))}km</div>
               </div>
-              <div style={{textAlign:"center"}}><div style={{fontSize:26,fontWeight:900}}>{arr.code}</div><div style={{fontSize:10,color:"#666"}}>{arr.city}</div></div>
+              <div style={{textAlign:"center"}}><div style={{fontSize:26,fontWeight:900}}>{arr.code}</div><div style={{fontSize:10,color:"#a8b7bf"}}>{arr.city}</div></div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
               <CityCard ap={dep} label="Departure"/>
@@ -809,14 +825,14 @@ export default function App(){
         <div style={{marginBottom:14}}>
           <Dropdown label="Airline" placeholder="Airline name or country…" query={alQ} setQuery={setAlQ} selected={alSel} onSelect={v=>{setAlSel(v);setAl(v);}} items={fAl} itemKey="code"
             renderLabel={a=>a.name}
-            renderRow={a=><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:8,height:8,borderRadius:2,background:a.color,flexShrink:0}}/><div><div style={{fontWeight:600,fontSize:12}}>{a.name} <span style={{color:"#444",fontWeight:400}}>({a.code})</span></div><div style={{fontSize:10,color:"#444"}}>{a.country}</div></div><div style={{marginLeft:"auto",display:"flex",gap:3}}><div style={{width:14,height:3,borderRadius:1,background:a.color}}/><div style={{width:14,height:3,borderRadius:1,background:a.accent}}/></div></div>}/>
+            renderRow={a=><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:8,height:8,borderRadius:2,background:a.color,flexShrink:0}}/><div><div style={{fontWeight:600,fontSize:12}}>{a.name} <span style={{color:"#8fa2ad",fontWeight:400}}>({a.code})</span></div><div style={{fontSize:10,color:"#8fa2ad"}}>{a.country}</div></div><div style={{marginLeft:"auto",display:"flex",gap:3}}><div style={{width:14,height:3,borderRadius:1,background:a.color}}/><div style={{width:14,height:3,borderRadius:1,background:a.accent}}/></div></div>}/>
         </div>
 
         <div style={{marginBottom:16}}>
-          <div style={{fontSize:10,color:"#555",letterSpacing:2,textTransform:"uppercase",marginBottom:9}}>Cabin Class</div>
+          <div style={{fontSize:10,color:"#9aa8af",letterSpacing:2,textTransform:"uppercase",marginBottom:9}}>Cabin Class</div>
           <div style={{display:"flex",gap:8}}>
             {["first","business","economy"].map(c=>(
-              <button key={c} onClick={()=>{setCls(c);setSeat(null);}} style={{flex:1,padding:"12px 0",borderRadius:10,border:`1px solid ${cls===c?"rgba(255,255,255,0.14)":"rgba(255,255,255,0.05)"}`,cursor:"pointer",fontWeight:600,fontSize:12,background:cls===c?"rgba(255,255,255,0.07)":"rgba(255,255,255,0.02)",color:cls===c?"#fff":"#555",transition:"all 0.15s"}}>
+              <button key={c} onClick={()=>{setCls(c);setSeat(null);}} style={{flex:1,padding:"12px 0",borderRadius:10,border:`1px solid ${cls===c?"rgba(255,255,255,0.14)":"rgba(255,255,255,0.05)"}`,cursor:"pointer",fontWeight:600,fontSize:12,background:cls===c?"rgba(255,255,255,0.07)":"rgba(255,255,255,0.02)",color:cls===c?"#fff":"#9aa8af",transition:"all 0.15s"}}>
                 {c==="first"?"✦ First":c==="business"?"◈ Business":"◻ Economy"}
               </button>
             ))}
@@ -825,11 +841,11 @@ export default function App(){
 
         <div style={{marginBottom:22}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{fontSize:10,color:"#555",letterSpacing:2,textTransform:"uppercase"}}>Select Seat — A380</div>
+            <div style={{fontSize:10,color:"#9aa8af",letterSpacing:2,textTransform:"uppercase"}}>Select Seat — A380</div>
             {seat&&<span style={{fontSize:11,color:"#00D4AA"}}>✓ {seat} · {ALL_SEATS.find(s=>s.id===seat)?.win?"Window":"Interior"}</span>}
           </div>
           <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:14,padding:14}}>
-            <div style={{display:"flex",gap:14,marginBottom:10,fontSize:10,color:"#444",flexWrap:"wrap"}}>
+            <div style={{display:"flex",gap:14,marginBottom:10,fontSize:10,color:"#8fa2ad",flexWrap:"wrap"}}>
               <span>■ Available &nbsp; ■ Taken &nbsp; <span style={{color:"#00D4FF"}}>■</span> Selected &nbsp; W=Window</span>
             </div>
             <SeatMap selected={seat} onSelect={setSeat} cls={cls}/>
@@ -837,7 +853,7 @@ export default function App(){
         </div>
 
         <button disabled={!dep||!arr||!al||!seat||!pName.trim()||(dep&&arr&&dep.code===arr.code)} onClick={startFlight}
-          style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"15px 0",color:(!dep||!arr||!al||!seat||!pName.trim())?"#444":"#fff",fontWeight:700,fontSize:15,cursor:(!dep||!arr||!al||!seat||!pName.trim())?"not-allowed":"pointer",opacity:(!dep||!arr||!al||!seat||!pName.trim())?0.4:1,transition:"all 0.2s"}}>
+          style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"15px 0",color:(!dep||!arr||!al||!seat||!pName.trim())?"#8fa2ad":"#fff",fontWeight:700,fontSize:15,cursor:(!dep||!arr||!al||!seat||!pName.trim())?"not-allowed":"pointer",opacity:(!dep||!arr||!al||!seat||!pName.trim())?0.4:1,transition:"all 0.2s"}}>
           {dep&&arr&&dep.code===arr.code?"Same airport selected":"View Boarding Pass →"}
         </button>
       </div>
@@ -981,7 +997,7 @@ export default function App(){
           {/* Top bar */}
           <div style={{background:"rgba(0,0,0,0.72)",backdropFilter:"blur(24px)",borderBottom:"1px solid rgba(255,255,255,0.05)",padding:"13px 22px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
-              <div style={{fontSize:10,color:"#555",letterSpacing:2.5,textTransform:"uppercase"}}>{al.name} · {fi.flightNum}</div>
+              <div style={{fontSize:10,color:"#9aa8af",letterSpacing:2.5,textTransform:"uppercase"}}>{al.name} · {fi.flightNum}</div>
               <div style={{fontSize:18,fontWeight:800,letterSpacing:-0.5,marginTop:1}}>{dep.code} <span style={{color:aa,fontWeight:300}}>—</span> {arr.code}</div>
             </div>
             <div style={{display:"flex",gap:9,alignItems:"center"}}>
@@ -1007,20 +1023,20 @@ export default function App(){
               {/* Elegant Timer */}
               {(()=>{
                 const display=hms(breaking?breakSecs:rem).split(":");
-                const accentColor=breaking?"#ffb36d":isNight?"#9bdcff":isSunset?"#ffd2a1":aa||"#7ec8e3";
-                const timerColor=breaking?"#fff0df":isNight?"#eaf8ff":isSunset?"#fff3df":"#f8fbff";
-                const timerGlow=breaking?"rgba(255,179,109,0.55)":isNight?"rgba(155,220,255,0.5)":isSunset?"rgba(255,210,161,0.5)":`${accentColor}88`;
+                const accentColor=breaking?"#c8a951":isNight?"#9bdcff":isSunset?"#c8a951":aa||"#7ec8e3";
+                const timerColor=breaking?"#f5f1e8":isNight?"#e8f2ff":isSunset?"#f5f1e8":"#f0ece3";
+                const timerGlow=breaking?"rgba(200,169,81,0.35)":isNight?"rgba(155,220,255,0.3)":isSunset?"rgba(200,169,81,0.35)":`${accentColor}55`;
                 return(
                   <div style={{position:"relative",marginBottom:18}}>
                     {/* Outer glow ring */}
-                    <div style={{position:"absolute",inset:-18,borderRadius:36,background:`radial-gradient(ellipse at center,${accentColor}26,transparent 68%)`,filter:"blur(18px)",pointerEvents:"none"}}/>
-                    <div style={{background:"transparent",border:`1px solid ${accentColor}66`,borderRadius:24,padding:"26px 32px 22px",boxShadow:`0 18px 70px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 0 1px rgba(229,177,154,0.16), 0 0 55px ${timerGlow}`}}>
+                    <div style={{position:"absolute",inset:-18,borderRadius:36,background:`radial-gradient(ellipse at center,${accentColor}12,transparent 68%)`,filter:"blur(20px)",pointerEvents:"none"}}/>
+                    <div style={{background:"linear-gradient(180deg,rgba(15,12,8,0.35),rgba(8,6,4,0.28))",backdropFilter:"blur(24px)",border:`1px solid ${accentColor}35`,borderRadius:28,padding:"28px 36px 24px",boxShadow:`0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(248,251,255,0.12)`}}>
                       {/* Label row */}
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-                        <div style={{fontSize:9,color:timerColor,letterSpacing:3.5,textTransform:"uppercase",opacity:0.86,textShadow:"0 2px 12px rgba(0,0,0,0.8)"}}>{breaking?"Break":"Time Remaining"}</div>
-                        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                          <div style={{width:6,height:6,borderRadius:"50%",background:running&&!breaking?accentColor:"rgba(255,255,255,0.35)",boxShadow:running&&!breaking?`0 0 10px ${accentColor}`:"none",transition:"all 0.5s"}}/>
-                          <div style={{fontSize:9,color:"rgba(255,255,255,0.72)",letterSpacing:1,textShadow:"0 2px 10px rgba(0,0,0,0.75)"}}>{running&&!breaking?"LIVE":"PAUSED"}</div>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+                        <div style={{fontSize:9,color:timerColor,letterSpacing:4,textTransform:"uppercase",opacity:0.75,textShadow:"0 1px 6px rgba(0,0,0,0.4)",fontWeight:500}}>{breaking?"Break":"Time Remaining"}</div>
+                        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                          <div style={{width:6,height:6,borderRadius:"50%",background:running&&!breaking?accentColor:"rgba(248,251,255,0.2)",boxShadow:running&&!breaking?`0 0 8px ${accentColor}66`:"none",transition:"all 0.5s"}}/>
+                          <div style={{fontSize:8,color:"rgba(248,251,255,0.65)",letterSpacing:1.5,textShadow:"0 1px 4px rgba(0,0,0,0.5)",fontWeight:400}}>{running&&!breaking?"LIVE":"PAUSED"}</div>
                         </div>
                       </div>
                       {/* Digit segments */}
@@ -1032,30 +1048,30 @@ export default function App(){
                               {seg.split("").map((d,di)=>(
                                 <div key={di} style={{
                                   width:44,height:72,
-                                  background:"transparent",
-                                  borderRadius:8,
-                                  border:`1px solid ${accentColor}58`,
+                                  background:"linear-gradient(180deg,rgba(248,251,255,0.06),rgba(0,0,0,0.08))",
+                                  borderRadius:10,
+                                  border:`1px solid ${accentColor}25`,
                                   display:"flex",alignItems:"center",justifyContent:"center",
                                   position:"relative",
                                   overflow:"hidden",
-                                  boxShadow:`inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 ${accentColor}30, 0 10px 30px rgba(0,0,0,0.32)`
+                                  boxShadow:`inset 0 1px 0 rgba(248,251,255,0.14)`
                                 }}>
                                   {/* Ghost segments backdrop */}
-                                  <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:52,fontFamily:"'Courier New',monospace",fontWeight:700,color:"rgba(255,255,255,0.08)",lineHeight:1,userSelect:"none"}}>8</div>
+                                  <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:52,fontFamily:"'Courier New',monospace",fontWeight:700,color:"rgba(248,251,255,0.04)",lineHeight:1,userSelect:"none"}}>8</div>
                                   {/* Actual digit */}
-                                  <div style={{fontSize:44,fontFamily:"'SF Mono','Courier New',monospace",fontWeight:700,color:timerColor,lineHeight:1,textShadow:`0 0 20px ${timerGlow}, 0 0 40px ${timerGlow}`,position:"relative",zIndex:1,letterSpacing:0}}>
+                                  <div style={{fontSize:44,fontFamily:"'SF Mono','Courier New',monospace",fontWeight:700,color:timerColor,lineHeight:1,textShadow:`0 0 12px ${timerGlow}`,position:"relative",zIndex:1,letterSpacing:0}}>
                                     {d}
                                   </div>
                                   {/* Center line separator effect */}
-                                  <div style={{position:"absolute",top:"50%",left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${accentColor}45,transparent)`,transform:"translateY(-50%)"}}/>
+                                  <div style={{position:"absolute",top:"50%",left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${accentColor}25,transparent)`,transform:"translateY(-50%)"}}/>
                                 </div>
                               ))}
                             </div>
                             {/* Colon separator */}
                             {si<2&&(
                               <div style={{display:"flex",flexDirection:"column",gap:10,margin:"0 6px",paddingBottom:4}}>
-                                <div style={{width:5,height:5,borderRadius:"50%",background:accentColor,boxShadow:`0 0 10px ${timerGlow}`,opacity:running&&!breaking?1:0.42,transition:"opacity 0.5s"}}/>
-                                <div style={{width:5,height:5,borderRadius:"50%",background:accentColor,boxShadow:`0 0 10px ${timerGlow}`,opacity:running&&!breaking?1:0.42,transition:"opacity 0.5s"}}/>
+                                <div style={{width:5,height:5,borderRadius:"50%",background:accentColor,boxShadow:`0 0 6px ${timerGlow}`,opacity:running&&!breaking?0.9:0.35,transition:"opacity 0.5s"}}/>
+                                <div style={{width:5,height:5,borderRadius:"50%",background:accentColor,boxShadow:`0 0 6px ${timerGlow}`,opacity:running&&!breaking?0.9:0.35,transition:"opacity 0.5s"}}/>
                               </div>
                             )}
                           </div>
@@ -1064,14 +1080,10 @@ export default function App(){
                       {/* Sub-labels */}
                       <div style={{display:"flex",justifyContent:"center",gap:0,marginTop:10}}>
                         {["HRS","","MIN","","SEC"].map((l,i)=>(
-                          <div key={i} style={{width:i===1||i===3?17+12+17:44+4+44,textAlign:"center",fontSize:8,color:"rgba(255,255,255,0.78)",opacity:l?1:0,letterSpacing:2,textTransform:"uppercase",textShadow:"0 2px 10px rgba(0,0,0,0.85)"}}>{l}</div>
+                          <div key={i} style={{width:i===1||i===3?17+12+17:44+4+44,textAlign:"center",fontSize:7,color:"rgba(248,251,255,0.65)",opacity:l?1:0,letterSpacing:2.5,textTransform:"uppercase",textShadow:"0 1px 4px rgba(0,0,0,0.5)",fontWeight:500}}>{l}</div>
                         ))}
                       </div>
-                      {/* Progress micro bar */}
-                      <div style={{marginTop:16,height:2,background:"rgba(255,255,255,0.12)",borderRadius:1,overflow:"hidden"}}>
-                        <div style={{height:"100%",width:`${breaking?(1-breakSecs/(breakSecs+1))*100:pct}%`,background:`linear-gradient(90deg,rgba(255,255,255,0.75),${accentColor},#e5b19a)`,borderRadius:1,transition:"width 1s linear",boxShadow:`0 0 14px ${timerGlow}`}}/>
-                      </div>
-                      <div style={{fontSize:10,color:"rgba(255,255,255,0.78)",marginTop:8,textAlign:"center",textShadow:"0 2px 10px rgba(0,0,0,0.86)"}}>{breaking?"break ends soon · stay relaxed":PHASES[phase]+" phase · "+fmt(fi.durationMins)+" total"}</div>
+                      <div style={{fontSize:9,color:"rgba(248,251,255,0.7)",marginTop:12,textAlign:"center",textShadow:"0 1px 4px rgba(0,0,0,0.5)",letterSpacing:0.5}}>{breaking?"break ends soon · stay relaxed":PHASES[phase]+" phase · "+fmt(fi.durationMins)+" total"}</div>
                     </div>
                   </div>
                 );
@@ -1079,7 +1091,7 @@ export default function App(){
 
               {/* Progress */}
               <div style={{background:"rgba(0,0,0,0.55)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:14,padding:"14px 18px",marginBottom:14}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:11,color:"#555"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:11,color:"#9aa8af"}}>
                   <span>{dep.code} · {fi.depTime}</span>
                   <span style={{color:aa,fontWeight:600}}>{pct}%</span>
                   <span>{arr.code} · {fi.arrTime}</span>
@@ -1092,10 +1104,10 @@ export default function App(){
                   <path d={`M 40 50 Q 250 10 460 50`} fill="none" stroke={`${aa}22`} strokeWidth={1.5} strokeDasharray="5 4"/>
                   <path d={`M 40 50 Q 250 10 ${40+420*prog} ${50-Math.sin(prog*Math.PI)*40}`} fill="none" stroke={aa} strokeWidth={1.5} opacity="0.7"/>
                   <circle cx={40} cy={50} r={4} fill={ac}/>
-                  <circle cx={460} cy={50} r={4} fill="#333"/>
+                  <circle cx={460} cy={50} r={4} fill="#7f8f98"/>
                   <text x={40+420*prog} y={50-Math.sin(prog*Math.PI)*40} textAnchor="middle" dominantBaseline="middle" fontSize={14} fill="#fff">✈</text>
-                  <text x={40} y={66} textAnchor="middle" fill="#555" fontSize={8}>{dep.code}</text>
-                  <text x={460} y={66} textAnchor="middle" fill="#444" fontSize={8}>{arr.code}</text>
+                  <text x={40} y={66} textAnchor="middle" fill="#9aa8af" fontSize={8}>{dep.code}</text>
+                  <text x={460} y={66} textAnchor="middle" fill="#8fa2ad" fontSize={8}>{arr.code}</text>
                 </svg>
               </div>
 
@@ -1103,14 +1115,14 @@ export default function App(){
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:18}}>
                 {[["Distance",`${fi.dist}km`],["Duration",fmt(fi.durationMins)],["Gate",fi.gate],["Seat",seat||"—"]].map(([l,v])=>(
                   <div key={l} style={{background:"rgba(0,0,0,0.5)",backdropFilter:"blur(10px)",borderRadius:9,padding:"9px 0",textAlign:"center",border:"1px solid rgba(255,255,255,0.05)"}}>
-                    <div style={{fontSize:8,color:"#444",textTransform:"uppercase",letterSpacing:1,marginBottom:3}}>{l}</div>
+                    <div style={{fontSize:8,color:"#8fa2ad",textTransform:"uppercase",letterSpacing:1,marginBottom:3}}>{l}</div>
                     <div style={{fontWeight:700,fontSize:12,color:"#bbb"}}>{v}</div>
                   </div>
                 ))}
               </div>
 
               <button disabled={breaking} onClick={()=>{setRunning(r=>!r);if(!running){setAttMsg(getMsg(timer,totalSecs,female,phase,consecRef.current));setShowAtt(true);}}}
-                style={{background:breaking?"rgba(255,255,255,0.06)":running?"rgba(6,21,33,0.72)":`linear-gradient(135deg,#fff7e8,#e5b19a 48%,${aa||"#7ec8e3"})`,border:`1px solid ${running?"rgba(255,255,255,0.22)":`${aa||"#7ec8e3"}88`}`,borderRadius:999,padding:"15px 46px",color:running?"#f8fbff":"#061521",fontWeight:900,fontSize:14,cursor:breaking?"not-allowed":"pointer",opacity:breaking?0.45:1,transition:"all 0.2s",letterSpacing:0,boxShadow:running?`0 14px 38px rgba(0,0,0,0.34), 0 0 24px ${(aa||"#7ec8e3")}44`:`0 16px 42px rgba(0,0,0,0.36), 0 0 34px ${(aa||"#7ec8e3")}66`,textShadow:running?"0 2px 12px rgba(0,0,0,0.6)":"none"}}>
+                style={{background:breaking?"rgba(255,255,255,0.08)":running?"linear-gradient(135deg,rgba(6,21,33,0.92),rgba(12,46,66,0.86))":`linear-gradient(135deg,#fff7e8 0%,#e5b19a 48%,${aa||"#7ec8e3"} 100%)`,border:`1px solid ${running?"rgba(255,255,255,0.3)":`${aa||"#7ec8e3"}cc`}`,borderRadius:999,padding:"16px 52px",color:running?"#f8fbff":"#061521",fontWeight:900,fontSize:15,cursor:breaking?"not-allowed":"pointer",opacity:breaking?0.55:1,transition:"all 0.2s",letterSpacing:0,boxShadow:running?`0 18px 46px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.18), 0 0 30px ${(aa||"#7ec8e3")}55`:`0 18px 48px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.72), 0 0 38px ${(aa||"#7ec8e3")}77`,textShadow:running?"0 2px 12px rgba(0,0,0,0.72)":"0 1px 0 rgba(255,255,255,0.45)"}}>
                 {breaking?`Break - ${hms(breakSecs)}`:running?"Pause Focus":(phase===0?"Start Focus Session":"Resume Focus")}
               </button>
             </div>
@@ -1129,7 +1141,7 @@ export default function App(){
             <div style={{background:"#0c0c1c",border:"1px solid rgba(255,255,255,0.07)",borderRadius:22,padding:34,maxWidth:360,width:"90%"}}>
               <div style={{fontSize:30,marginBottom:14}}>⚡</div>
               <div style={{fontWeight:800,fontSize:20,marginBottom:8}}>Abort Flight?</div>
-              <div style={{color:"#666",fontSize:13,lineHeight:1.7,marginBottom:12}}>You've focused for <strong style={{color:"#fff"}}>{fmt(Math.floor(timer/60))}</strong> so far.</div>
+              <div style={{color:"#a8b7bf",fontSize:13,lineHeight:1.7,marginBottom:12}}>You've focused for <strong style={{color:"#fff"}}>{fmt(Math.floor(timer/60))}</strong> so far.</div>
               <div style={{background:"rgba(200,169,81,0.08)",border:"1px solid rgba(200,169,81,0.12)",borderRadius:10,padding:"11px 14px",marginBottom:22}}>
                 <div style={{fontSize:11,color:"#C8A951",marginBottom:2}}>XP you'll earn</div>
                 <div style={{fontSize:26,fontWeight:800,color:"#C8A951"}}>+{Math.floor((timer/3600)*100)} XP</div>
@@ -1150,20 +1162,20 @@ export default function App(){
                 <div style={{fontWeight:800,fontSize:18}}>🍽 In-Flight Menu</div>
                 <div style={{color:"#C8A951",fontWeight:700,fontSize:13}}>{xp} XP</div>
               </div>
-              <p style={{color:"#444",fontSize:11,marginBottom:16,lineHeight:1.6}}>Buy food for a timed break. Timer pauses while you eat.</p>
+              <p style={{color:"#8fa2ad",fontSize:11,marginBottom:16,lineHeight:1.6}}>Buy food for a timed break. Timer pauses while you eat.</p>
               <div style={{display:"grid",gap:7}}>
                 {FOOD.map(f=>(
                   <div key={f.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"rgba(255,255,255,0.02)",borderRadius:10,border:"1px solid rgba(255,255,255,0.04)",opacity:xp>=f.xp?1:0.3}}>
                     <span style={{fontSize:22}}>{f.emoji}</span>
                     <div style={{flex:1}}>
                       <div style={{fontWeight:600,fontSize:12}}>{f.name}</div>
-                      <div style={{fontSize:10,color:"#555",marginTop:1}}>{f.mins}min break</div>
+                      <div style={{fontSize:10,color:"#9aa8af",marginTop:1}}>{f.mins}min break</div>
                     </div>
-                    <button disabled={xp<f.xp} onClick={()=>buyFood(f)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:7,padding:"6px 12px",color:xp>=f.xp?"#fff":"#444",cursor:xp>=f.xp?"pointer":"not-allowed",fontWeight:600,fontSize:11}}>{f.xp} XP</button>
+                    <button disabled={xp<f.xp} onClick={()=>buyFood(f)} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:7,padding:"6px 12px",color:xp>=f.xp?"#fff":"#8fa2ad",cursor:xp>=f.xp?"pointer":"not-allowed",fontWeight:600,fontSize:11}}>{f.xp} XP</button>
                   </div>
                 ))}
               </div>
-              <button onClick={()=>setFoodOpen(false)} style={{width:"100%",marginTop:14,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"12px 0",color:"#666",cursor:"pointer",fontWeight:600,fontSize:12}}>Close</button>
+              <button onClick={()=>setFoodOpen(false)} style={{width:"100%",marginTop:14,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"12px 0",color:"#a8b7bf",cursor:"pointer",fontWeight:600,fontSize:12}}>Close</button>
             </div>
           </div>
         )}
@@ -1176,23 +1188,23 @@ export default function App(){
     <div style={{minHeight:"100vh",background:"#06060f",color:"#e8e8e8",fontFamily:"system-ui,sans-serif"}}>
       <style>{`*{box-sizing:border-box}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}`}</style>
       <div style={{maxWidth:700,margin:"0 auto",padding:"36px 20px"}}>
-        <button onClick={()=>setScreen("home")} style={{background:"none",border:"none",color:"#444",cursor:"pointer",fontSize:12,letterSpacing:1.5,textTransform:"uppercase",marginBottom:26}} onMouseEnter={e=>e.currentTarget.style.color="#aaa"} onMouseLeave={e=>e.currentTarget.style.color="#444"}>← Back</button>
+        <button onClick={()=>setScreen("home")} style={{background:"none",border:"none",color:"#8fa2ad",cursor:"pointer",fontSize:12,letterSpacing:1.5,textTransform:"uppercase",marginBottom:26}} onMouseEnter={e=>e.currentTarget.style.color="#aaa"} onMouseLeave={e=>e.currentTarget.style.color="#8fa2ad"}>← Back</button>
         <h2 style={{fontSize:30,fontWeight:900,letterSpacing:-1,marginBottom:4}}>Flight Log</h2>
-        <p style={{color:"#444",fontSize:12,marginBottom:24}}>{logs.length} entries · {Math.floor(logs.reduce((a,l)=>a+l.dur,0)/60)}h total · {logs.filter(l=>l.done).length} complete</p>
-        {logs.length===0&&<div style={{textAlign:"center",padding:60,color:"#333"}}><div style={{fontSize:40,marginBottom:12}}>✈</div>No flights yet</div>}
+        <p style={{color:"#8fa2ad",fontSize:12,marginBottom:24}}>{logs.length} entries · {Math.floor(logs.reduce((a,l)=>a+l.dur,0)/60)}h total · {logs.filter(l=>l.done).length} complete</p>
+        {logs.length===0&&<div style={{textAlign:"center",padding:60,color:"#7f8f98"}}><div style={{fontSize:40,marginBottom:12}}>✈</div>No flights yet</div>}
         <div style={{display:"grid",gap:9}}>
           {logs.map(l=>(
             <div key={l.id} style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:14,padding:"16px 18px",display:"flex",alignItems:"center",gap:14}}>
               <div style={{fontSize:22}}>{l.done?"🛬":"⚡"}</div>
               <div style={{flex:1}}>
                 <div style={{fontWeight:700,fontSize:15}}>{l.dep} → {l.arr}</div>
-                <div style={{fontSize:11,color:"#555",marginTop:2}}>{l.al} · {l.fn} · Seat {l.seat} · {l.cls}</div>
-                <div style={{fontSize:10,color:"#333",marginTop:1}}>{l.pax} · {l.date} · {fmt(l.dur)}</div>
+                <div style={{fontSize:11,color:"#9aa8af",marginTop:2}}>{l.al} · {l.fn} · Seat {l.seat} · {l.cls}</div>
+                <div style={{fontSize:10,color:"#7f8f98",marginTop:1}}>{l.pax} · {l.date} · {fmt(l.dur)}</div>
               </div>
               <div style={{textAlign:"right"}}>
                 <div style={{color:"#C8A951",fontWeight:700,fontSize:15}}>+{l.xpE} XP</div>
                 <div style={{fontSize:10,color:l.done?"#00D4AA":"#FF6B35",marginTop:3}}>{l.done?"✓ Complete":"⚡ Aborted"}</div>
-                <button onClick={()=>setLogs(p=>p.filter(x=>x.id!==l.id))} style={{background:"none",border:"none",color:"#333",cursor:"pointer",fontSize:10,marginTop:4,padding:0}} onMouseEnter={e=>e.currentTarget.style.color="#FF6B35"} onMouseLeave={e=>e.currentTarget.style.color="#333"}>🗑 Delete</button>
+                <button onClick={()=>setLogs(p=>p.filter(x=>x.id!==l.id))} style={{background:"none",border:"none",color:"#7f8f98",cursor:"pointer",fontSize:10,marginTop:4,padding:0}} onMouseEnter={e=>e.currentTarget.style.color="#FF6B35"} onMouseLeave={e=>e.currentTarget.style.color="#7f8f98"}>🗑 Delete</button>
               </div>
             </div>
           ))}
