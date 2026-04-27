@@ -717,7 +717,7 @@ export default function App(){
         <div style={{textAlign:"center",marginBottom:44}}>
           <div style={{fontSize:11,letterSpacing:6,color:"#7f8f98",textTransform:"uppercase",marginBottom:14}}>Productivity Aviation</div>
           <div style={{fontSize:48,animation:"fly 4s ease-in-out infinite",marginBottom:10}}>✈</div>
-          <h1 style={{fontSize:46,fontWeight:900,letterSpacing:-2,margin:0,background:"linear-gradient(135deg,#fff,#a0c4ff 60%,#7ec8e3)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>FocusAir</h1>
+          <h1 style={{fontSize:46,fontWeight:900,letterSpacing:-2,margin:0,background:"linear-gradient(135deg,#fff,#a0c4ff 60%,#7ec8e3)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Focus Air</h1>
           <p style={{color:"#8fa2ad",marginTop:10,fontSize:14}}>Your productivity, elevated to 35,000 feet</p>
           <div style={{display:"flex",justifyContent:"center",gap:10,marginTop:18,flexWrap:"wrap"}}>
             {[["✦",`${xp.toLocaleString()} XP`],["🛫",`${logs.filter(l=>l.done).length} Flights`],["⏱",`${Math.floor(logs.reduce((a,l)=>a+l.dur,0)/60)}h Flown`]].map(([ic,val])=>(
