@@ -125,13 +125,14 @@ function getPhase(p){
   return 4;
 }
 function skyBg(p){
-  if(p<0.05) return"linear-gradient(180deg,#1a3a5c 0%,#2d6a9f 40%,#87ceeb 80%,#90c06e 95%)";
-  if(p<0.15) return"linear-gradient(180deg,#0f2745 0%,#1e5080 35%,#4a9fd4 65%,#87ceeb 85%)";
-  if(p<0.40) return"linear-gradient(180deg,#0e3a6e 0%,#1a6eb5 20%,#5baad4 45%,#a8d4f0 65%,#ffffff 80%)";
-  if(p<0.65) return"linear-gradient(180deg,#0a2a5a 0%,#1a5a9a 25%,#4a9ad4 50%,#87ceeb 70%,#e0f0ff 90%)";
-  if(p<0.80) return"linear-gradient(180deg,#1a0a2e 0%,#8b1a4a 20%,#c0392b 35%,#e67e22 55%,#f39c12 70%,#ffd89b 85%)";
-  if(p<0.93) return"linear-gradient(180deg,#050d1a 0%,#0a1a30 25%,#0f2d50 50%,#2d7ab5 80%)";
-  return"linear-gradient(180deg,#000005 0%,#05051a 30%,#0a0a2e 60%,#1a2a50 85%)";
+  // These are the sky colours seen THROUGH the window glass
+  if(p<0.05) return{sky:"#1a3a5c",horizon:"#2d6a9f",mid:"#5090c0",low:"#7ab0d0",ground:"#3a5a30",city:false};
+  if(p<0.15) return{sky:"#0a1e3a",horizon:"#1e5080",mid:"#3a7aaa",low:"#87ceeb",ground:"#4a6a3a",city:false};
+  if(p<0.40) return{sky:"#0e3a6e",horizon:"#2a70b8",mid:"#5baad4",low:"#c8e8f8",ground:"#e8f0f8",city:false};
+  if(p<0.65) return{sky:"#0a2a5a",horizon:"#1a5a9a",mid:"#4a9ad4",low:"#b0d8f0",ground:"#dceeff",city:false};
+  if(p<0.80) return{sky:"#1a0a2e",horizon:"#8b1a4a",mid:"#c0392b",low:"#f39c12",ground:"#ffd89b",city:false,sunset:true};
+  if(p<0.93) return{sky:"#020810",horizon:"#0a1830",mid:"#0f2d50",low:"#1a4a7a",ground:"#0d1a2a",city:true};
+  return{sky:"#000005",horizon:"#05051a",mid:"#0a0a2e",low:"#1a2a50",ground:"#070714",city:true,night:true};
 }
 
 // A380 seat map — generated once at module level is fine (no random)
@@ -148,10 +149,62 @@ const ALL_SEATS = makeSeats();
 const OCCUPIED = new Set(ALL_SEATS.filter((_,i)=>i%3===1||i%7===4).map(s=>s.id));
 
 // Stars pre-computed (no random in render)
+
+// Aerial window photos by phase (Unsplash — free to use)
+const WINDOW_PHOTOS = [
+  // 0 Boarding — runway/airport tarmac view
+  "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=85&fit=crop",
+  // 1 Takeoff — climbing through clouds
+  "https://images.unsplash.com/photo-1483450388369-9ed95738483c?w=1600&q=85&fit=crop",
+  // 2 Cruise — ocean of clouds from above
+  "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=1600&q=85&fit=crop",
+  // 3 Descent — sunset city from air (matches screenshot)
+  "https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=1600&q=85&fit=crop",
+  // 4 Landing — night city grid lights
+  "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1600&q=85&fit=crop",
+];
+
 const STARS = Array.from({length:60},(_,i)=>({
   top:(i*37+13)%70, left:(i*61+7)%100,
   size:i%5===0?2:1, delay:i%4
 }));
+
+const AUTH_KEY = "focusair_auth_v1";
+const USER_KEY_PREFIX = "focusair_user_";
+
+function readJSON(key,fallback){
+  try{
+    const raw=localStorage.getItem(key);
+    return raw?JSON.parse(raw):fallback;
+  }catch{
+    return fallback;
+  }
+}
+function writeJSON(key,value){
+  try{localStorage.setItem(key,JSON.stringify(value));}catch{}
+}
+function cleanEmail(email){
+  return email.trim().toLowerCase();
+}
+function isEmail(value){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+function userKey(email){
+  return `${USER_KEY_PREFIX}${cleanEmail(email)}`;
+}
+function getActiveUser(){
+  return readJSON(AUTH_KEY,null);
+}
+function getUserProfile(name){
+  return readJSON(userKey(name),{xp:0,logs:[],inFlight:null});
+}
+function saveUserProfile(name,profile){
+  if(!name) return;
+  writeJSON(userKey(name),profile);
+}
+const RAW_ACTIVE_USER = getActiveUser();
+const INITIAL_USER = RAW_ACTIVE_USER?.email ? RAW_ACTIVE_USER : null;
+const INITIAL_PROFILE = INITIAL_USER?.email ? getUserProfile(INITIAL_USER.email) : {xp:0,logs:[],inFlight:null};
 
 // ── FLIGHT ATTENDANT ──────────────────────────────────────────
 function getMsg(timerSecs,totalSecs,female,phaseIdx,consecSecs){
@@ -389,26 +442,32 @@ function CityCard({ap,label}){
 
 // ── MAIN APP ──────────────────────────────────────────────────
 export default function App(){
-  const [screen,setScreen]=useState("home");
-  const [dep,setDep]=useState(null);
-  const [arr,setArr]=useState(null);
-  const [al,setAl]=useState(null);
-  const [seat,setSeat]=useState(null);
-  const [cls,setCls]=useState("economy");
-  const [pName,setPName]=useState("");
-  const [fi,setFi]=useState(null);
+  const savedFlight = INITIAL_PROFILE.inFlight;
+  const [auth,setAuth]=useState(INITIAL_USER);
+  const [loginEmail,setLoginEmail]=useState("");
+  const [loginPass,setLoginPass]=useState("");
+  const [authMode,setAuthMode]=useState("signin");
+  const [authError,setAuthError]=useState("");
+  const [screen,setScreen]=useState(INITIAL_USER ? (savedFlight?.fi ? "flight" : "home") : "login");
+  const [dep,setDep]=useState(savedFlight?.dep||null);
+  const [arr,setArr]=useState(savedFlight?.arr||null);
+  const [al,setAl]=useState(savedFlight?.al||null);
+  const [seat,setSeat]=useState(savedFlight?.seat||null);
+  const [cls,setCls]=useState(savedFlight?.cls||"economy");
+  const [pName,setPName]=useState(savedFlight?.pName||INITIAL_USER?.displayName||"");
+  const [fi,setFi]=useState(savedFlight?.fi||null);
   const [showBP,setShowBP]=useState(false);
-  const [timer,setTimer]=useState(0);
+  const [timer,setTimer]=useState(savedFlight?.timer||0);
   const [running,setRunning]=useState(false);
-  const [phase,setPhase]=useState(0);
-  const [prog,setProg]=useState(0);
-  const [xp,setXp]=useState(0);
-  const [logs,setLogs]=useState([]);
-  const [breakSecs,setBreakSecs]=useState(0);
+  const [phase,setPhase]=useState(savedFlight?.phase||0);
+  const [prog,setProg]=useState(savedFlight?.prog||0);
+  const [xp,setXp]=useState(INITIAL_PROFILE.xp||0);
+  const [logs,setLogs]=useState(INITIAL_PROFILE.logs||[]);
+  const [breakSecs,setBreakSecs]=useState(savedFlight?.breakSecs||0);
   const [breaking,setBreaking]=useState(false);
   const [abortOpen,setAbortOpen]=useState(false);
   const [foodOpen,setFoodOpen]=useState(false);
-  const [female,setFemale]=useState(true);
+  const [female,setFemale]=useState(savedFlight?.female??true);
   const [attMsg,setAttMsg]=useState("");
   const [showAtt,setShowAtt]=useState(false);
   const [depQ,setDepQ]=useState("");const [depSel,setDepSel]=useState(null);
@@ -424,13 +483,68 @@ export default function App(){
   const consecRef=useRef(0);
   const consecState=useRef(0);
 
+  function loadProfile(email,user){
+    const profile=getUserProfile(email);
+    const inflight=profile.inFlight;
+    setAuth(user);
+    setXp(profile.xp||0);
+    setLogs(profile.logs||[]);
+    if(inflight?.fi){
+      setDep(inflight.dep||null);setArr(inflight.arr||null);setAl(inflight.al||null);
+      setSeat(inflight.seat||null);setCls(inflight.cls||"economy");setPName(inflight.pName||user.displayName||"");
+      setFi(inflight.fi);setTimer(inflight.timer||0);setProg(inflight.prog||0);setPhase(inflight.phase||0);
+      setBreakSecs(inflight.breakSecs||0);setBreaking(false);setRunning(false);setFemale(inflight.female??true);
+      setScreen("flight");
+    }else{
+      setDep(null);setArr(null);setAl(null);setSeat(null);setCls("economy");setPName(user.displayName||"");
+      setFi(null);setTimer(0);setProg(0);setPhase(0);setBreakSecs(0);setBreaking(false);setRunning(false);
+      setScreen("home");
+    }
+    setAuthError("");setLoginPass("");
+  }
+
+  function handleAuth(e){
+    e.preventDefault();
+    const email=cleanEmail(loginEmail);
+    const password=loginPass;
+    if(!email||!password){setAuthError("Enter an email and password to continue.");return;}
+    if(!isEmail(email)){setAuthError("Use a valid email address.");return;}
+    const profile=getUserProfile(email);
+    if(authMode==="signin"){
+      if(!profile.password){setAuthError("No local account found. Create one first.");return;}
+      if(profile.password!==password){setAuthError("That password does not match this local account.");return;}
+    }else if(profile.password){
+      setAuthError("This local account already exists. Sign in instead.");
+      return;
+    }
+    const user={email,displayName:profile.displayName||email.split("@")[0]};
+    saveUserProfile(email,{...profile,password,email,displayName:user.displayName,xp:profile.xp||0,logs:profile.logs||[],inFlight:profile.inFlight||null});
+    writeJSON(AUTH_KEY,user);
+    loadProfile(email,user);
+  }
+
+  function logout(){
+    clearInterval(timerRef.current);clearInterval(breakRef.current);clearInterval(attRef.current);
+    setRunning(false);setBreaking(false);setAuth(null);localStorage.removeItem(AUTH_KEY);
+    setLoginEmail("");setLoginPass("");setAuthMode("signin");setScreen("login");
+  }
+
   // Keep ctx always fresh
   useEffect(()=>{ctx.current={dep,arr,al,fi,pName,cls,seat,xp};},[dep,arr,al,fi,pName,cls,seat,xp]);
+
+  useEffect(()=>{
+    if(!auth?.email) return;
+    const existing=getUserProfile(auth.email);
+    const inFlight=screen==="flight"&&fi?{dep,arr,al,seat,cls,pName,fi,timer,phase,prog,breakSecs,female}:null;
+    saveUserProfile(auth.email,{...existing,email:auth.email,displayName:auth.displayName,xp,logs,inFlight,updatedAt:new Date().toISOString()});
+  },[auth,xp,logs,screen,dep,arr,al,seat,cls,pName,fi,timer,phase,prog,breakSecs,female]);
 
   const totalSecs=fi?fi.durationMins*60:0;
   const ac=al?.color||"#0A0082";
   const aa=al?.accent||"#00BFFF";
-  const isWin=seat&&ALL_SEATS.find(s=>s.id===seat)?.win;
+  const seatInfo = seat ? ALL_SEATS.find(s=>s.id===seat) : null;
+  const isWin = seatInfo?.win || false;
+  const isAisle = seatInfo ? !seatInfo.win && (["C","D","G","H"].includes(seatInfo.col) || (seatInfo.cls==="business"&&["B","E"].includes(seatInfo.col)) || (seatInfo.cls==="first"&&["D","G"].includes(seatInfo.col))) : false;
 
   // ── complete flight (uses ref, no stale closure) ──
   function doComplete(){
@@ -536,6 +650,47 @@ export default function App(){
   const isNight=prog>0.8;
   const isSunset=prog>0.6&&prog<=0.8;
 
+  if(screen==="login") return(
+    <div style={{minHeight:"100vh",background:"#061521",color:"#e8e8e8",fontFamily:"system-ui,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",padding:14}}>
+      <style>{`*{box-sizing:border-box}input::placeholder{color:#5f6d74}input:focus{border-color:rgba(229,177,154,.5)!important;box-shadow:0 0 0 3px rgba(229,177,154,.1);outline:none}`}</style>
+      <div style={{position:"fixed",inset:0,background:"radial-gradient(circle at 18% 18%,rgba(229,177,154,0.12),transparent 28%),radial-gradient(circle at 85% 76%,rgba(126,200,227,0.12),transparent 30%),linear-gradient(135deg,#061521,#09283a 54%,#05070b)",zIndex:0}}/>
+      <div style={{position:"fixed",inset:0,backgroundImage:"linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)",backgroundSize:"54px 54px",zIndex:0}}/>
+      <div style={{position:"fixed",top:22,left:22,zIndex:1,display:"flex",alignItems:"center",gap:12,pointerEvents:"none"}}>
+        <img src="/skybound-syntax.png" alt="Skybound Syntax" style={{width:82,height:82,objectFit:"cover",borderRadius:16,boxShadow:"0 18px 46px rgba(0,0,0,0.42), 0 0 0 1px rgba(229,177,154,0.25)"}}/>
+        <div style={{display:"grid",gap:2,fontFamily:"Georgia, 'Times New Roman', serif"}}>
+          <div style={{fontSize:8,letterSpacing:2.2,color:"rgba(229,177,154,0.58)",textTransform:"uppercase",fontWeight:700}}>Made by</div>
+          <div style={{fontSize:11,color:"rgba(229,177,154,0.68)",letterSpacing:0.8,fontStyle:"italic"}}>Skybound Syntax</div>
+        </div>
+      </div>
+      <div style={{position:"relative",zIndex:1,width:"min(440px,100%)"}}>
+        <div style={{textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:10,letterSpacing:5,color:"#e5b19a",textTransform:"uppercase",marginBottom:10}}>Private Focus Lounge</div>
+          <h1 style={{fontSize:38,fontWeight:900,letterSpacing:0,margin:"0 0 6px",background:"linear-gradient(135deg,#fff8df,#e5b19a 45%,#7ec8e3)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>FocusAir</h1>
+          <p style={{color:"#a8b7bf",fontSize:13,margin:0}}>Sign in with email to keep the right XP, logs, and active flights attached to the right user.</p>
+        </div>
+        <form onSubmit={handleAuth} style={{position:"relative",background:"rgba(3,18,28,0.76)",border:"1px solid rgba(229,177,154,0.22)",borderRadius:18,padding:20,boxShadow:"0 30px 90px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.07)",backdropFilter:"blur(22px)",overflow:"visible"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+            {[["signin","Sign In"],["create","Create"]].map(([mode,label])=>(
+              <button key={mode} type="button" onClick={()=>{setAuthMode(mode);setAuthError("");}} style={{padding:"10px 0",borderRadius:10,border:`1px solid ${authMode===mode?"rgba(229,177,154,0.45)":"rgba(255,255,255,0.08)"}`,background:authMode===mode?"rgba(229,177,154,0.14)":"rgba(255,255,255,0.035)",color:authMode===mode?"#ffd4c4":"#8a98a0",fontWeight:700,cursor:"pointer",fontSize:12}}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{fontSize:10,color:"#e5b19a",letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>Email</div>
+          <input type="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} placeholder="you@example.com"
+            style={{width:"100%",background:"rgba(255,255,255,0.045)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"12px 14px",color:"#f4f0e8",fontSize:14,marginBottom:12}}/>
+          <div style={{fontSize:10,color:"#e5b19a",letterSpacing:2,textTransform:"uppercase",marginBottom:6}}>Password</div>
+          <input type="password" value={loginPass} onChange={e=>setLoginPass(e.target.value)} placeholder="Enter your password"
+            style={{width:"100%",background:"rgba(255,255,255,0.045)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"12px 14px",color:"#f4f0e8",fontSize:14,marginBottom:authError?10:14}}/>
+          {authError&&<div style={{color:"#ff9f8f",fontSize:12,lineHeight:1.5,marginBottom:14}}>{authError}</div>}
+          <button type="submit" style={{width:"100%",background:"linear-gradient(135deg,#ffd7c7,#e5b19a 48%,#7ec8e3)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:12,padding:"14px 0",color:"#071521",fontWeight:900,fontSize:14,cursor:"pointer",boxShadow:"0 12px 34px rgba(229,177,154,0.22)"}}>
+            {authMode==="signin"?"Enter Lounge":"Create Your FocusAir Account"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+
   // ═══ HOME ═══════════════════════════════════════════════════
   if(screen==="home") return(
     <div style={{minHeight:"100vh",background:"#06060f",color:"#e8e8e8",fontFamily:"system-ui,sans-serif"}}>
@@ -543,6 +698,10 @@ export default function App(){
       <div style={{position:"fixed",inset:0,background:"radial-gradient(ellipse 80% 50% at 20% 60%,#0d1b4b18,transparent),radial-gradient(ellipse 60% 40% at 80% 20%,#1a0b3b15,transparent)",zIndex:0}}/>
       <div style={{position:"fixed",inset:0,backgroundImage:"radial-gradient(circle,rgba(255,255,255,.02) 1px,transparent 1px)",backgroundSize:"50px 50px",zIndex:0}}/>
       <div style={{position:"relative",zIndex:1,maxWidth:800,margin:"0 auto",padding:"48px 20px"}}>
+        <div style={{position:"absolute",top:20,right:20,display:"flex",gap:10,alignItems:"center"}}>
+          <span style={{fontSize:11,color:"#6d6658"}}>{auth?.email}</span>
+          <button onClick={logout} style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:9,padding:"7px 11px",color:"#888",cursor:"pointer",fontSize:11,fontWeight:700}}>Sign Out</button>
+        </div>
         <div style={{textAlign:"center",marginBottom:44}}>
           <div style={{fontSize:11,letterSpacing:6,color:"#333",textTransform:"uppercase",marginBottom:14}}>Productivity Aviation</div>
           <div style={{fontSize:48,animation:"fly 4s ease-in-out infinite",marginBottom:10}}>✈</div>
@@ -687,30 +846,132 @@ export default function App(){
 
   // ═══ FLIGHT ═════════════════════════════════════════════════
   if(screen==="flight"&&fi){
-    const bg=skyBg(prog);
+    // Photo phases drive background now
     return(
       <div style={{minHeight:"100vh",color:"#e8e8e8",fontFamily:"system-ui,sans-serif",position:"relative",overflow:"hidden"}}>
         <style>{`*{box-sizing:border-box}@keyframes wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}@keyframes fly{0%{transform:translateX(-3px)}50%{transform:translateX(3px)}100%{transform:translateX(-3px)}}@keyframes blink{0%,100%{opacity:0.3}50%{opacity:1}}`}</style>
 
-        {/* Sky background */}
-        <div style={{position:"fixed",inset:0,background:bg,zIndex:0,transition:"background 4s ease"}}/>
+        {/* ── BACKGROUND: real photo + wooden frame ── */}
+        <div style={{position:"fixed",inset:0,zIndex:0}}>
 
-        {/* Stars (night) — static, no random in render */}
-        {isNight&&STARS.map((st,i)=>(
-          <div key={i} style={{position:"fixed",width:st.size,height:st.size,background:"#fff",borderRadius:"50%",top:`${st.top}%`,left:`${st.left}%`,animation:`blink ${2+st.delay}s ease-in-out infinite`,opacity:0.6,zIndex:1,pointerEvents:"none"}}/>
-        ))}
+          {/* 1. Full-bleed aerial photo */}
+          <img
+            src={WINDOW_PHOTOS[Math.min(phase, WINDOW_PHOTOS.length-1)]}
+            alt=""
+            style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",transition:"opacity 1.5s ease"}}
+          />
 
-        {/* Sunset glow */}
-        {isSunset&&<div style={{position:"fixed",bottom:0,left:0,right:0,height:"25%",background:"linear-gradient(0deg,rgba(255,100,0,0.12),transparent)",zIndex:1,pointerEvents:"none"}}/>}
+          {/* 2. Subtle darkening tint */}
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.22)"}}/>
 
-        {/* Window oval if window seat */}
-        {isWin&&(
-          <div style={{position:"fixed",inset:0,zIndex:2,pointerEvents:"none"}}>
-            <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-52%)",width:"min(42vw,300px)",height:"min(52vh,360px)",borderRadius:"50%/45%",border:"5px solid rgba(255,255,255,0.05)",boxShadow:"inset 0 0 50px rgba(0,0,0,0.45),0 0 0 20px rgba(0,0,0,0.75)"}}/>
-            <div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse min(44vw,320px) min(55vh,380px) at 50% 48%,transparent 58%,rgba(0,0,0,0.88) 78%)`}}/>
-          </div>
+          {/* 3. Wooden window frame + cabin walls — SVG composited ON TOP */}
+          <svg
+            style={{position:"absolute",inset:0,width:"100%",height:"100%",display:"block"}}
+            viewBox="0 0 1200 700"
+            preserveAspectRatio="xMidYMid slice"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="wood1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stopColor="#5c3010"/>
+                <stop offset="20%"  stopColor="#9a6030"/>
+                <stop offset="42%"  stopColor="#704020"/>
+                <stop offset="65%"  stopColor="#b07840"/>
+                <stop offset="85%"  stopColor="#6a3818"/>
+                <stop offset="100%" stopColor="#3e2008"/>
+              </linearGradient>
+              <linearGradient id="sheen1" x1="0" y1="0" x2="0.5" y2="1">
+                <stop offset="0%"   stopColor="rgba(255,215,160,0.20)"/>
+                <stop offset="35%"  stopColor="rgba(255,215,160,0.07)"/>
+                <stop offset="100%" stopColor="rgba(255,215,160,0)"/>
+              </linearGradient>
+              <linearGradient id="glare1" x1="0.05" y1="0.05" x2="0.45" y2="0.9">
+                <stop offset="0%"   stopColor="rgba(255,255,255,0.18)"/>
+                <stop offset="25%"  stopColor="rgba(255,255,255,0.07)"/>
+                <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
+              </linearGradient>
+              {/* Clip to window opening */}
+              <clipPath id="wp">
+                <rect x="258" y="58" width="684" height="584" rx="110"/>
+              </clipPath>
+              {/* Mask: dark everywhere EXCEPT window opening */}
+              <mask id="wm">
+                <rect width="1200" height="700" fill="white"/>
+                <rect x="258" y="58" width="684" height="584" rx="110" fill="black"/>
+              </mask>
+            </defs>
+
+            {/* ── Dark cabin walls — everywhere except window hole ── */}
+            <rect width="1200" height="700" fill="#0d0a07" mask="url(#wm)"/>
+
+            {/* Extra solid side panels so photo doesn't bleed through */}
+            <rect x="0"    y="0" width="258"  height="700" fill="#0d0a07"/>
+            <rect x="942"  y="0" width="258"  height="700" fill="#0d0a07"/>
+            <rect x="0"    y="0" width="1200" height="58"  fill="#0b0806"/>
+            <rect x="0"    y="642" width="1200" height="58" fill="#0b0806"/>
+
+            {/* Grain lines on side walls */}
+            {[140,260,380,500].map(y=>(
+              <g key={y}>
+                <rect x="18" y={y} width="220" height="1.5" fill="rgba(160,100,40,0.07)" rx="1"/>
+                <rect x="962" y={y} width="220" height="1.5" fill="rgba(160,100,40,0.07)" rx="1"/>
+              </g>
+            ))}
+
+            {/* Arm rests */}
+            <rect x="32"   y="595" width="190" height="26" rx="13" fill="#191009"/>
+            <rect x="32"   y="595" width="190" height="3"  rx="1"  fill="rgba(255,155,60,0.08)"/>
+            <rect x="978"  y="595" width="190" height="26" rx="13" fill="#191009"/>
+            <rect x="978"  y="595" width="190" height="3"  rx="1"  fill="rgba(255,155,60,0.08)"/>
+
+            {/* Window sill bottom */}
+            <rect x="250"  y="642" width="700" height="16" rx="5" fill="#1c1108"/>
+            <rect x="250"  y="642" width="700" height="2.5" rx="1" fill="rgba(255,165,70,0.13)"/>
+
+            {/* ── Wooden frame (ring around window opening) ── */}
+            {/* Frame uses windowMask so wood only renders OUTSIDE the window hole */}
+            <rect x="224" y="28" width="752" height="644" rx="132" fill="url(#wood1)" mask="url(#wm)"/>
+            {/* Sheen also masked */}
+            <rect x="224" y="28" width="752" height="644" rx="132" fill="url(#sheen1)" mask="url(#wm)"/>
+
+            {/* ── Frame bevels ── */}
+            <rect x="258" y="58" width="684" height="584" rx="110" fill="none"
+              stroke="rgba(255,200,130,0.20)" strokeWidth="3"/>
+            <rect x="262" y="62" width="676" height="576" rx="107" fill="none"
+              stroke="rgba(0,0,0,0.50)" strokeWidth="2.5"/>
+            {/* Rubber seal */}
+            <rect x="254" y="54" width="692" height="592" rx="113" fill="none"
+              stroke="#180e04" strokeWidth="7"/>
+
+            {/* ── Glass effects clipped to window ── */}
+            <g clipPath="url(#wp)">
+              {/* Top-corner glare */}
+              <ellipse cx="370" cy="130" rx="170" ry="52"
+                fill="rgba(255,255,255,0.09)"
+                style={{filter:"blur(14px)"}}/>
+              {/* Diagonal glare sweep */}
+              <rect x="258" y="58" width="684" height="584" rx="110"
+                fill="url(#glare1)"/>
+              {/* Very subtle bottom vignette */}
+              <rect x="258" y="560" width="684" height="82"
+                fill="rgba(0,0,0,0.18)"
+                style={{filter:"blur(6px)"}}/>
+            </g>
+
+            {/* Ambient warm light spill from cabin ceiling */}
+            <ellipse cx="600" cy="0" rx="520" ry="90"
+              fill="rgba(255,185,90,0.04)"/>
+          </svg>
+        </div>
+
+        {/* Aisle overhead light strip */}
+        {isAisle&&!isWin&&(
+          <div style={{position:"fixed",top:58,left:"21.5%",right:"21.5%",height:2,zIndex:3,
+            background:`linear-gradient(90deg,transparent,${aa}88,${aa},${aa}88,transparent)`,
+            animation:"aisleGlow 3s ease-in-out infinite",pointerEvents:"none"}}/>
         )}
-        {!isWin&&<div style={{position:"fixed",inset:0,background:"radial-gradient(ellipse 85% 75% at 50% 50%,transparent 45%,rgba(0,0,0,0.65) 100%)",zIndex:2,pointerEvents:"none"}}/>}
+
+
 
         {/* Airline bar */}
         <div style={{position:"fixed",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${ac},${aa},${ac})`,zIndex:20}}/>
@@ -743,90 +1004,88 @@ export default function App(){
                 ))}
               </div>
 
-              {/* Timer */}
-                <div style={{ background: "rgba(10,10,10,0.65)",backdropFilter: "blur(28px)",border: "1px solid rgba(255,255,255,0.06)",borderRadius: 22,padding: "32px 40px",marginBottom: 16,boxShadow: "0 20px 60px rgba(0,0,0,0.7)"
-}}>
-  
-  <div style={{
-    fontSize: 11,
-    fontFamily: "Inter, sans-serif",
-    color: "rgba(232,230,227,0.4)",
-    letterSpacing: 2.5,
-    textTransform: "uppercase",
-    marginBottom: 12
-  }}>
-    {breaking ? "Break Interval" : "Remaining Time"}
-  </div>
+              {/* Elegant Timer */}
+              {(()=>{
+                const display=hms(breaking?breakSecs:rem).split(":");
+                const accentColor=breaking?"#ffb36d":isNight?"#9bdcff":isSunset?"#ffd2a1":aa||"#7ec8e3";
+                const timerColor=breaking?"#fff0df":isNight?"#eaf8ff":isSunset?"#fff3df":"#f8fbff";
+                const timerGlow=breaking?"rgba(255,179,109,0.55)":isNight?"rgba(155,220,255,0.5)":isSunset?"rgba(255,210,161,0.5)":`${accentColor}88`;
+                return(
+                  <div style={{position:"relative",marginBottom:18}}>
+                    {/* Outer glow ring */}
+                    <div style={{position:"absolute",inset:-18,borderRadius:36,background:`radial-gradient(ellipse at center,${accentColor}26,transparent 68%)`,filter:"blur(18px)",pointerEvents:"none"}}/>
+                    <div style={{background:"transparent",border:`1px solid ${accentColor}66`,borderRadius:24,padding:"26px 32px 22px",boxShadow:`0 18px 70px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 0 1px rgba(229,177,154,0.16), 0 0 55px ${timerGlow}`}}>
+                      {/* Label row */}
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+                        <div style={{fontSize:9,color:timerColor,letterSpacing:3.5,textTransform:"uppercase",opacity:0.86,textShadow:"0 2px 12px rgba(0,0,0,0.8)"}}>{breaking?"Break":"Time Remaining"}</div>
+                        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                          <div style={{width:6,height:6,borderRadius:"50%",background:running&&!breaking?accentColor:"rgba(255,255,255,0.35)",boxShadow:running&&!breaking?`0 0 10px ${accentColor}`:"none",transition:"all 0.5s"}}/>
+                          <div style={{fontSize:9,color:"rgba(255,255,255,0.72)",letterSpacing:1,textShadow:"0 2px 10px rgba(0,0,0,0.75)"}}>{running&&!breaking?"LIVE":"PAUSED"}</div>
+                        </div>
+                      </div>
+                      {/* Digit segments */}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:0}}>
+                        {display.map((seg,si)=>(
+                          <div key={si} style={{display:"flex",alignItems:"center"}}>
+                            {/* Two digits */}
+                            <div style={{display:"flex",gap:4}}>
+                              {seg.split("").map((d,di)=>(
+                                <div key={di} style={{
+                                  width:44,height:72,
+                                  background:"transparent",
+                                  borderRadius:8,
+                                  border:`1px solid ${accentColor}58`,
+                                  display:"flex",alignItems:"center",justifyContent:"center",
+                                  position:"relative",
+                                  overflow:"hidden",
+                                  boxShadow:`inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 ${accentColor}30, 0 10px 30px rgba(0,0,0,0.32)`
+                                }}>
+                                  {/* Ghost segments backdrop */}
+                                  <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:52,fontFamily:"'Courier New',monospace",fontWeight:700,color:"rgba(255,255,255,0.08)",lineHeight:1,userSelect:"none"}}>8</div>
+                                  {/* Actual digit */}
+                                  <div style={{fontSize:44,fontFamily:"'SF Mono','Courier New',monospace",fontWeight:700,color:timerColor,lineHeight:1,textShadow:`0 0 20px ${timerGlow}, 0 0 40px ${timerGlow}`,position:"relative",zIndex:1,letterSpacing:0}}>
+                                    {d}
+                                  </div>
+                                  {/* Center line separator effect */}
+                                  <div style={{position:"absolute",top:"50%",left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${accentColor}45,transparent)`,transform:"translateY(-50%)"}}/>
+                                </div>
+                              ))}
+                            </div>
+                            {/* Colon separator */}
+                            {si<2&&(
+                              <div style={{display:"flex",flexDirection:"column",gap:10,margin:"0 6px",paddingBottom:4}}>
+                                <div style={{width:5,height:5,borderRadius:"50%",background:accentColor,boxShadow:`0 0 10px ${timerGlow}`,opacity:running&&!breaking?1:0.42,transition:"opacity 0.5s"}}/>
+                                <div style={{width:5,height:5,borderRadius:"50%",background:accentColor,boxShadow:`0 0 10px ${timerGlow}`,opacity:running&&!breaking?1:0.42,transition:"opacity 0.5s"}}/>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {/* Sub-labels */}
+                      <div style={{display:"flex",justifyContent:"center",gap:0,marginTop:10}}>
+                        {["HRS","","MIN","","SEC"].map((l,i)=>(
+                          <div key={i} style={{width:i===1||i===3?17+12+17:44+4+44,textAlign:"center",fontSize:8,color:"rgba(255,255,255,0.78)",opacity:l?1:0,letterSpacing:2,textTransform:"uppercase",textShadow:"0 2px 10px rgba(0,0,0,0.85)"}}>{l}</div>
+                        ))}
+                      </div>
+                      {/* Progress micro bar */}
+                      <div style={{marginTop:16,height:2,background:"rgba(255,255,255,0.12)",borderRadius:1,overflow:"hidden"}}>
+                        <div style={{height:"100%",width:`${breaking?(1-breakSecs/(breakSecs+1))*100:pct}%`,background:`linear-gradient(90deg,rgba(255,255,255,0.75),${accentColor},#e5b19a)`,borderRadius:1,transition:"width 1s linear",boxShadow:`0 0 14px ${timerGlow}`}}/>
+                      </div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.78)",marginTop:8,textAlign:"center",textShadow:"0 2px 10px rgba(0,0,0,0.86)"}}>{breaking?"break ends soon · stay relaxed":PHASES[phase]+" phase · "+fmt(fi.durationMins)+" total"}</div>
+                    </div>
+                  </div>
+                );
+              })()}
 
-  <div style={{
-    fontSize: 60,
-    fontFamily: "Playfair Display, serif",
-    fontWeight: 400,
-    letterSpacing: 3,
-    color: "#E8E6E3",
-    lineHeight: 1.05
-  }}>
-    {hms(breaking ? breakSecs : rem)}
-  </div>
-
-  <div style={{
-    fontSize: 13,
-    fontFamily: "Inter, sans-serif",
-    color: "rgba(232,230,227,0.55)",
-    marginTop: 10
-  }}>
-    {breaking
-      ? "Relax — your session resumes automatically"
-      : "Time remaining for this journey"}
-  </div>
-</div>
-
-
-{/* Progress */}
-<div style={{
-  background: "rgba(10,10,10,0.55)",
-  backdropFilter: "blur(18px)",
-  border: "1px solid rgba(255,255,255,0.05)",
-  borderRadius: 14,
-  padding: "16px 20px",
-  marginBottom: 14
-}}>
-  
-                <div style={{
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 10,
-    fontSize: 12,
-    fontFamily: "Inter, sans-serif",
-    color: "rgba(232,230,227,0.75)"
-  }}>
-    <span>{dep.code} · {fi.depTime}</span>
-
-    <span style={{
-      color: "#D4AF37",
-      fontWeight: 500,
-      letterSpacing: 1
-    }}>
-      {pct}%
-    </span>
-
-    <span>{arr.code} · {fi.arrTime}</span>
-  </div>
-
-  <div style={{
-    height: 3,
-    background: "rgba(255,255,255,0.06)",
-    borderRadius: 2,
-    overflow: "hidden"
-  }}>
-    <div style={{
-      height: "100%",
-      width: `${pct}%`,
-      background: "#D4AF37",
-      borderRadius: 2,
-      transition: "width 1s ease"
-    }}/>
-                   </div>
+              {/* Progress */}
+              <div style={{background:"rgba(0,0,0,0.55)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:14,padding:"14px 18px",marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:11,color:"#555"}}>
+                  <span>{dep.code} · {fi.depTime}</span>
+                  <span style={{color:aa,fontWeight:600}}>{pct}%</span>
+                  <span>{arr.code} · {fi.arrTime}</span>
+                </div>
+                <div style={{height:3,background:"rgba(255,255,255,0.05)",borderRadius:2,overflow:"hidden",marginBottom:10}}>
+                  <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${ac},${aa})`,borderRadius:2,transition:"width 1s linear",boxShadow:`0 0 8px ${aa}66`}}/>
                 </div>
                 {/* Mini flight path SVG */}
                 <svg width="100%" viewBox="0 0 500 80" style={{background:"rgba(0,0,0,0.15)",borderRadius:6,display:"block"}}>
@@ -838,6 +1097,7 @@ export default function App(){
                   <text x={40} y={66} textAnchor="middle" fill="#555" fontSize={8}>{dep.code}</text>
                   <text x={460} y={66} textAnchor="middle" fill="#444" fontSize={8}>{arr.code}</text>
                 </svg>
+              </div>
 
               {/* Stats */}
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:18}}>
@@ -850,8 +1110,8 @@ export default function App(){
               </div>
 
               <button disabled={breaking} onClick={()=>{setRunning(r=>!r);if(!running){setAttMsg(getMsg(timer,totalSecs,female,phase,consecRef.current));setShowAtt(true);}}}
-                style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12,padding:"15px 44px",color:"#fff",fontWeight:700,fontSize:14,cursor:breaking?"not-allowed":"pointer",opacity:breaking?0.4:1,transition:"all 0.2s",letterSpacing:0.5}}>
-                {breaking?`☕ Break — ${hms(breakSecs)}`:running?"⏸  Pause":"▶  "+(phase===0?"Start Focus Session":"Resume")}
+                style={{background:breaking?"rgba(255,255,255,0.06)":running?"rgba(6,21,33,0.72)":`linear-gradient(135deg,#fff7e8,#e5b19a 48%,${aa||"#7ec8e3"})`,border:`1px solid ${running?"rgba(255,255,255,0.22)":`${aa||"#7ec8e3"}88`}`,borderRadius:999,padding:"15px 46px",color:running?"#f8fbff":"#061521",fontWeight:900,fontSize:14,cursor:breaking?"not-allowed":"pointer",opacity:breaking?0.45:1,transition:"all 0.2s",letterSpacing:0,boxShadow:running?`0 14px 38px rgba(0,0,0,0.34), 0 0 24px ${(aa||"#7ec8e3")}44`:`0 16px 42px rgba(0,0,0,0.36), 0 0 34px ${(aa||"#7ec8e3")}66`,textShadow:running?"0 2px 12px rgba(0,0,0,0.6)":"none"}}>
+                {breaking?`Break - ${hms(breakSecs)}`:running?"Pause Focus":(phase===0?"Start Focus Session":"Resume Focus")}
               </button>
             </div>
           </div>

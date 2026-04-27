@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import App from "../FocusAir2.jsx";
+import App from "../FocusAir.jsx";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
